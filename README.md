@@ -1,4 +1,4 @@
-### d3js project based on react18, swc
+### react project used on webpack, swc, tailwind
 
 - Specs
   - Framework

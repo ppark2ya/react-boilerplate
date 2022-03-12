@@ -41,6 +41,8 @@ module.exports = {
       require('os').EOL === '\r\n' ? 'windows' : 'unix',
     ],
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    '@typescript-eslint/naming-convention': 'off',
+    'no-debugger': 'off',
   },
   globals: {
     React: 'writable',

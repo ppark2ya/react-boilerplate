@@ -4,10 +4,13 @@
  * @see https://webpack.js.org/loaders/
  * @see https://michaelceber.medium.com/how-to-setup-and-use-css-modules-in-react-with-webpack-7f512b946ae0
  */
+
 const path = require('path');
+const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const dotenv = require('dotenv-webpack');
-
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const devMode = process.env.NODE_ENV !== 'production';
 
 const CSSModuleLoader = {
@@ -55,6 +58,7 @@ const SASSLoader = {
 // Standard style loader (prod and dev covered here)
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const styleLoader = devMode ? 'style-loader' : MiniCssExtractPlugin.loader;
+rimraf.sync(path.resolve(__dirname, 'dist'));
 
 module.exports = {
   mode: 'none',
@@ -117,10 +121,21 @@ module.exports = {
      * @see https://stackoverflow.com/a/66250238
      */
     new dotenv(),
+    /**
+     * @see https://fgh0296.tistory.com/19
+     */
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: 'bundle-report.html',
+      openAnalyzer: false,
+      generateStatsFile: true,
+      statsFilename: 'bundle-stats.json',
+    }),
   ],
   devServer: {
     compress: true,
     port: 3000,
     historyApiFallback: true,
   },
+  performance: { hints: false },
 };

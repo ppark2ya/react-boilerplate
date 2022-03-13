@@ -6,6 +6,8 @@
  */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const dotenv = require('dotenv-webpack');
+
 const devMode = process.env.NODE_ENV !== 'production';
 
 const CSSModuleLoader = {
@@ -42,6 +44,7 @@ const SASSLoader = {
     // Prefer `dart-sass`
     implementation: require('sass'),
     sassOptions: {
+      fiber: require('fibers'),
       indentWidth: 4,
       includePaths: [path.resolve(__dirname, 'styles/')],
       sourceMap: devMode,
@@ -55,6 +58,7 @@ const styleLoader = devMode ? 'style-loader' : MiniCssExtractPlugin.loader;
 
 module.exports = {
   mode: 'none',
+  devtool: devMode ? 'eval-source-map' : 'source-map',
   entry: './src/index.tsx',
   output: {
     clean: true,
@@ -80,6 +84,14 @@ module.exports = {
         test: /\.module\.(sa|sc|c|pc)ss$/,
         use: [styleLoader, CSSModuleLoader, 'postcss-loader', SASSLoader],
       },
+      {
+        test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'url-loader',
+        options: {
+          name: '[hash].[ext]',
+          limit: 10000,
+        },
+      },
     ],
   },
   resolve: {
@@ -100,6 +112,11 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
+    /**
+     * @desc "process.env" undefined solution
+     * @see https://stackoverflow.com/a/66250238
+     */
+    new dotenv(),
   ],
   devServer: {
     compress: true,

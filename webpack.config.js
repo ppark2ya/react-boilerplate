@@ -89,12 +89,36 @@ module.exports = {
         use: [styleLoader, CSSModuleLoader, 'postcss-loader', SASSLoader],
       },
       {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        use: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              options: {
+                prettier: false,
+                svgo: false,
+                svgoConfig: {
+                  plugins: [{ removeViewBox: false }],
+                },
+                titleProp: true,
+                ref: true,
+              },
+            },
+          },
+        ],
+      },
+      {
         test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'url-loader',
-        options: {
-          name: '[hash].[ext]',
-          limit: 10000,
-        },
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              name: '[hash].[ext]',
+              limit: 10000,
+            },
+          },
+        ],
       },
     ],
   },

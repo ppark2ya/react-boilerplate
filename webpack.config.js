@@ -102,14 +102,36 @@ module.exports = {
     extensions: ['*', '.js', '.ts', '.tsx'],
     alias: {
       '@': path.resolve(__dirname, 'src/'),
+      '~': path.resolve(__dirname, 'src/'),
     },
     modules: [path.resolve(__dirname, './src'), 'node_modules'],
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: path.join(__dirname, 'public/index.html'),
-    }),
+    new HtmlWebpackPlugin(
+      Object.assign(
+        {},
+        {
+          filename: 'index.html',
+          template: path.join(__dirname, 'public/index.html'),
+        },
+        !devMode
+          ? {
+              minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                removeRedundantAttributes: true,
+                useShortDoctype: true,
+                removeEmptyAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                keepClosingSlash: true,
+                minifyJS: true,
+                minifyCSS: true,
+                minifyURLs: true,
+              },
+            }
+          : undefined,
+      ),
+    ),
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional

@@ -1,5 +1,10 @@
 import React from 'react';
 import classes from './App.module.scss';
+import { APP_STAGE } from './constants/environment';
+
+if (APP_STAGE === 'local') {
+  require('./mocks');
+}
 
 function App() {
   return (

@@ -17,6 +17,7 @@
         "development": false,
         "useBuiltins": false
       }
-    }
+    },
+    "externalHelpers": true
   }
 }

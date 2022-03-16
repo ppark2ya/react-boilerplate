@@ -1,9 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './global.pcss';
 import App from './App';
 
-const root = (ReactDOM as any).createRoot(
+const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 root.render(<App />);

@@ -1,7 +1,6 @@
 'use strict';
 
 const path = require('path');
-// Standard style loader (prod and dev covered here)
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';

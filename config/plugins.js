@@ -1,15 +1,15 @@
 'use strict';
 
 const path = require('path');
+const paths = require('./paths');
 const rimraf = require('rimraf');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// Standard style loader (prod and dev covered here)
+const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const dotenv = require('dotenv-webpack');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyPlugin = require('copy-webpack-plugin');
-const fs = require('fs');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -21,7 +21,7 @@ const plugins = [
       {},
       {
         filename: 'index.html',
-        template: path.join(__dirname, '../public/index.html'),
+        template: paths.appHtml,
       },
       isProduction
         ? {
@@ -41,17 +41,14 @@ const plugins = [
         : undefined,
     ),
   ),
-  new MiniCssExtractPlugin({
-    // Options similar to the same options in webpackOptions.output
-    // both options are optional
-    filename: '[name].css',
-    chunkFilename: '[id].css',
-  }),
   /**
    * @desc "process.env" undefined solution
    * @see https://stackoverflow.com/a/66250238
    */
   new dotenv(),
+  new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
+    PUBLIC_URL: paths.publicUrlOrPath.slice(0, -1),
+  }),
 ];
 
 /**
@@ -59,6 +56,12 @@ const plugins = [
  */
 if (isProduction) {
   plugins.push(
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: 'static/css/[name].[contenthash:8].css',
+      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+    }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'static',
       reportFilename: 'bundle-report.html',
@@ -68,15 +71,27 @@ if (isProduction) {
     }),
   );
 
-  const dirPath = path.resolve(__dirname, '../public/static');
+  plugins.push(
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'public',
+          filter: async (resourcePath) => {
+            const fileName = path.basename(resourcePath);
 
-  if (fs.existsSync(dirPath)) {
-    plugins.push(
-      new CopyPlugin({
-        patterns: [{ from: 'public/static', to: 'static' }],
-      }),
-    );
-  }
+            if (
+              fileName === 'index.html' ||
+              fileName === 'mockServiceWorker.js'
+            ) {
+              return false;
+            }
+
+            return true;
+          },
+        },
+      ],
+    }),
+  );
 } else {
   plugins.push(
     /**
@@ -87,4 +102,5 @@ if (isProduction) {
     }),
   );
 }
+
 module.exports = plugins;
